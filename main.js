@@ -122,16 +122,17 @@ function find_path(e) {
 	const startpoint = destinations[0];
 	const endpoint = destinations[1];
 
-	queue.push([0, startpoint]);
+	queue.push([0, 0, startpoint]);
 
 	while (queue.length > 0) {
 		const current_item = queue.shift();
 		const current_value = current_item[0];
-		const current_coordinates = current_item[1];
+		const current_coordinates = current_item[2];
 
 		for (let index = 0; index < coordinates.length; index++) {
 			const coordinate = coordinates[index];
 			const new_value = current_value + 1;
+
 			const new_coordinate = [
 				coordinate[0] + current_coordinates[0],
 				coordinate[1] + current_coordinates[1],
@@ -165,11 +166,21 @@ function find_path(e) {
 				continue;
 			}
 
-			queue.push([new_value, new_coordinate]);
+			distance_left =
+				Math.pow(
+					Math.abs(parseInt([endpoint[0] - new_coordinate[0]])),
+					2
+				) +
+				Math.pow(
+					Math.abs(parseInt([endpoint[1] - new_coordinate[1]])),
+					2
+				);
+			queue.push([new_value, distance_left, new_coordinate]);
 			grid_values[new_coordinate[0]][new_coordinate[1]] = new_value;
 
-			// setTimeout(redraw_path(grid_values), 500);
+			setTimeout(redraw_path(grid_values), 500);
 		}
+		queue.sort((a, b) => a[1] - b[1]);
 	}
 }
 
