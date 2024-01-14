@@ -9,6 +9,10 @@ const canvas_context = canvas.getContext("2d");
 
 let brushState = 1;
 let arr = create_grid(50, 50);
+
+const square_width = canvas.offsetWidth / arr.length;
+const square_height = canvas.offsetHeight / arr[0].length;
+
 draw_canvas(arr);
 
 // events
@@ -27,11 +31,12 @@ brush_change_button.addEventListener("mousedown", function (e) {
 	brush_type_info.textContent = brushes[index];
 });
 
-button_pathfinder.addEventListener("mousedown", function (e) {
-	if (count_destinations != 2) {
+pathfind_button.addEventListener("mousedown", function (e) {
+	if (find_destinations().length != 2) {
 		console.log("need more points");
 		return;
 	}
+	find_path();
 });
 
 canvas.addEventListener("mousedown", function (e) {
@@ -40,13 +45,10 @@ canvas.addEventListener("mousedown", function (e) {
 
 // functions
 function update_grid(grid, x, y) {
-	square_width = canvas.offsetWidth / grid.length;
-	square_height = canvas.offsetHeight / grid[0].length;
-
 	col = Math.floor(x / square_width);
 	row = Math.floor(y / square_height);
 
-	if (brushState == 1 && count_destinations() == 2) {
+	if (brushState == 1 && find_destinations().length == 2) {
 		return;
 	}
 	grid[row][col] = brushState;
@@ -62,9 +64,7 @@ function get_cursor_position(canv, event) {
 
 function draw_canvas(data_array) {
 	for (let row = 0; row < data_array.length; row++) {
-		square_width = canvas.offsetWidth / data_array.length;
 		for (let col = 0; col < data_array[row].length; col++) {
-			square_height = canvas.offsetHeight / data_array[row].length;
 			fill_style = ["black", "white", "red"];
 
 			canvas_context.fillStyle = fill_style[data_array[row][col]];
@@ -96,12 +96,12 @@ function update_grid_event(event) {
 	draw_canvas(arr);
 }
 
-function count_destinations(e) {
-	let items = 0;
+function find_destinations(e) {
+	let items = [];
 	for (let row = 0; row < arr.length; row++) {
 		for (let col = 0; col < arr[row].length; col++) {
 			if (arr[row][col] == 1) {
-				items++;
+				items.push([row, col]);
 			}
 		}
 	}
@@ -109,5 +109,90 @@ function count_destinations(e) {
 }
 
 function find_path(e) {
-	//todo
+	let queue = [];
+	let grid_values = create_grid(50, 50);
+	const coordinates = [
+		[-1, 0],
+		[1, 0],
+		[0, -1],
+		[0, 1],
+	];
+
+	const destinations = find_destinations();
+	const startpoint = destinations[0];
+	const endpoint = destinations[1];
+
+	queue.push([0, startpoint]);
+
+	while (queue.length > 0) {
+		const current_item = queue.shift();
+		const current_value = current_item[0];
+		const current_coordinates = current_item[1];
+
+		for (let index = 0; index < coordinates.length; index++) {
+			const coordinate = coordinates[index];
+			const new_value = current_value + 1;
+			const new_coordinate = [
+				coordinate[0] + current_coordinates[0],
+				coordinate[1] + current_coordinates[1],
+			];
+			if (
+				new_coordinate[0] == endpoint[0] &&
+				new_coordinate[1] == endpoint[1]
+			) {
+				return;
+			}
+
+			if (new_coordinate[0] < 0 || new_coordinate[1] < 0) {
+				continue;
+			}
+			if (
+				new_coordinate[0] >= grid_values.length ||
+				new_coordinate[1] >= grid_values[0].length
+			) {
+				continue;
+			}
+
+			if (arr[new_coordinate[0]][new_coordinate[1]] != 0) {
+				continue;
+			}
+
+			if (
+				grid_values[new_coordinate[0]][new_coordinate[1]] <=
+					new_value &&
+				grid_values[new_coordinate[0]][new_coordinate[1]] != 0
+			) {
+				continue;
+			}
+
+			queue.push([new_value, new_coordinate]);
+			grid_values[new_coordinate[0]][new_coordinate[1]] = new_value;
+
+			// setTimeout(redraw_path(grid_values), 500);
+		}
+	}
+}
+
+function redraw_path(path_grid) {
+	for (let row = 0; row < arr.length; row++) {
+		for (let col = 0; col < arr[row].length; col++) {
+			fill_style = ["black", "white", "red"];
+
+			if (
+				path_grid[row][col] != 0 &&
+				arr[row][col] != 2 &&
+				arr[row][col] != 1
+			) {
+				canvas_context.fillStyle = "green";
+			} else {
+				canvas_context.fillStyle = fill_style[arr[row][col]];
+			}
+			canvas_context.fillRect(
+				col * square_width,
+				row * square_height,
+				square_width,
+				square_height
+			);
+		}
+	}
 }
