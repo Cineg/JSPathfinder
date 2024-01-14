@@ -2,12 +2,12 @@
 const canvas = document.getElementById("canvas_path");
 const reset_button = document.getElementById("button_reset_grid");
 const brush_change_button = document.getElementById("button_change_brush");
+const pathfind_button = document.getElementById("button_pathfinder");
 const brush_type_info = document.getElementById("brush_type");
 const brushes = ["erase", "destination", "obstacle"];
 const canvas_context = canvas.getContext("2d");
 
 let brushState = 1;
-let destinations = [];
 let arr = create_grid(50, 50);
 draw_canvas(arr);
 
@@ -27,10 +27,15 @@ brush_change_button.addEventListener("mousedown", function (e) {
 	brush_type_info.textContent = brushes[index];
 });
 
+button_pathfinder.addEventListener("mousedown", function (e) {
+	if (count_destinations != 2) {
+		console.log("need more points");
+		return;
+	}
+});
+
 canvas.addEventListener("mousedown", function (e) {
-	let click_coordinates = get_cursor_position(canvas, e);
-	update_grid(arr, click_coordinates[0], click_coordinates[1]);
-	draw_canvas(arr);
+	update_grid_event(e);
 });
 
 // functions
@@ -41,6 +46,9 @@ function update_grid(grid, x, y) {
 	col = Math.floor(x / square_width);
 	row = Math.floor(y / square_height);
 
+	if (brushState == 1 && count_destinations() == 2) {
+		return;
+	}
 	grid[row][col] = brushState;
 }
 
@@ -49,7 +57,6 @@ function get_cursor_position(canv, event) {
 	const x = event.clientX - rect.left;
 	const y = event.clientY - rect.top;
 
-	console.log("x: " + x, "y: " + y);
 	return [x, y];
 }
 
@@ -81,4 +88,26 @@ function create_grid(width, height) {
 		grid.push(mini_arr);
 	}
 	return grid;
+}
+
+function update_grid_event(event) {
+	let click_coordinates = get_cursor_position(canvas, event);
+	update_grid(arr, click_coordinates[0], click_coordinates[1]);
+	draw_canvas(arr);
+}
+
+function count_destinations(e) {
+	let items = 0;
+	for (let row = 0; row < arr.length; row++) {
+		for (let col = 0; col < arr[row].length; col++) {
+			if (arr[row][col] == 1) {
+				items++;
+			}
+		}
+	}
+	return items;
+}
+
+function find_path(e) {
+	//todo
 }
