@@ -1,22 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pathfind</title>
-</head>
-<body>
-    <main>
-        <h1> Little Something to learn JavaScript </h1>
-        <p>Brush style: <span id="brush_type">destination</span>.</p>
-        <button type="button" id="button_change_brush">Change Brush</button>
-        <button type="button" id="button_reset_grid">Reset Grid</button>
-        <button type="button" id="button_pathfinder">Run Pathfinder</button>
-        <br/>
-        <canvas id="canvas_path" width="600" height="600"></canvas>
-    </main>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Pathfind</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<main>
+			<h1>Little Something to learn JavaScript</h1>
+			<div class="buttons">
+				<button type="button" id="button_change_brush">
+					Change Brush
+				</button>
+				<button type="button" id="button_reset_grid">Reset Grid</button>
+				<button type="button" id="button_pathfinder">
+					Run Pathfinder
+				</button>
+			</div>
 
+			<p>
+				Brush style: <b><span id="brush_type">destination</span></b
+				>.
+			</p>
+			<canvas id="canvas_path" width="600" height="600"></canvas>
 
-    <script src="main.js"></script>
-</body>
+			<div class="grid_settings">
+				<label for="grid_size">Select grid size:</label>
+				<input
+					type="number"
+					name="grid_size"
+					id="grid_size"
+					value="50"
+					max="100"
+					min="10"
+				/>
+			</div>
+		</main>
+
+		<script src="main.js"></script>
+	</body>
 </html>

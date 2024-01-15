@@ -1,0 +1,71 @@
+h1 {
+	padding: 0;
+	margin: 0;
+	padding-top: 10px;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	background-color: RGB(10, 20, 30);
+	color: rgb(220, 220, 220);
+}
+
+main {
+	display: flex;
+	align-content: space-around;
+	flex-direction: column;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+}
+
+canvas {
+	border-radius: 10px;
+	border: 1px solid rgb(220, 220, 220);
+}
+
+main h1 {
+	margin: auto;
+}
+
+main p {
+	margin: auto;
+	margin-bottom: 10px;
+	font-size: 1.5rem;
+}
+
+.buttons {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: center;
+	margin: 10px;
+}
+
+.buttons button {
+	margin: 0 5px;
+	padding: 5px 10px;
+	border-radius: 10px;
+	font-weight: bold;
+}
+
+.buttons button:hover {
+	background-color: RGB(10, 20, 30);
+	color: rgb(220, 220, 220);
+}
+
+.grid_settings {
+	margin-top: 10px;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: center;
+}
+
+.grid_settings label {
+	margin: 0 10px;
+}
+
+.grid_settings input {
+	width: 3rem;
+}

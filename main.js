@@ -3,15 +3,18 @@ const canvas = document.getElementById("canvas_path");
 const reset_button = document.getElementById("button_reset_grid");
 const brush_change_button = document.getElementById("button_change_brush");
 const pathfind_button = document.getElementById("button_pathfinder");
+const size_changer = document.getElementById("grid_size");
 const brush_type_info = document.getElementById("brush_type");
 const brushes = ["erase", "destination", "obstacle"];
 const canvas_context = canvas.getContext("2d");
 
-let brushState = 1;
-let arr = create_grid(50, 50);
+let grid_size = 50;
 
-const square_width = canvas.offsetWidth / arr.length;
-const square_height = canvas.offsetHeight / arr[0].length;
+let brushState = 1;
+let arr = create_grid(grid_size, grid_size);
+
+let square_width = canvas.offsetWidth / grid_size;
+let square_height = canvas.offsetHeight / grid_size;
 
 let is_mouse_down = false;
 
@@ -19,7 +22,7 @@ draw_canvas(arr);
 
 // events
 reset_button.addEventListener("mousedown", function (e) {
-	arr = create_grid(50, 50);
+	arr = create_grid(grid_size, grid_size);
 	draw_canvas(arr);
 });
 
@@ -39,6 +42,14 @@ pathfind_button.addEventListener("mousedown", function (e) {
 		return;
 	}
 	find_path();
+});
+
+size_changer.addEventListener("change", function (e) {
+	grid_size = parseInt(e.target.value);
+	arr = create_grid(grid_size, grid_size);
+	square_height = canvas.offsetWidth / grid_size;
+	square_width = canvas.offsetHeight / grid_size;
+	draw_canvas(arr);
 });
 
 canvas.addEventListener("mousedown", function (e) {
@@ -123,7 +134,7 @@ function find_destinations(e) {
 
 function find_path(e) {
 	let queue = [];
-	let grid_values = create_grid(50, 50);
+	let grid_values = create_grid(grid_size, grid_size);
 	const coordinates = [
 		[-1, 0],
 		[1, 0],
@@ -160,6 +171,7 @@ function find_path(e) {
 					new_coordinate[0] == endpoint[0] &&
 					new_coordinate[1] == endpoint[1]
 				) {
+					console.log(grid_values);
 					return;
 				}
 
@@ -199,7 +211,12 @@ function redraw_path(path_grid) {
 				arr[row][col] != 2 &&
 				arr[row][col] != 1
 			) {
-				canvas_context.fillStyle = "green";
+				let color_val = 200 - path_grid[row][col] * 1.5;
+				if (color_val < 60) color_val = 20;
+
+				canvas_context.fillStyle = `RGB(${color_val + 20}, ${
+					color_val + 10
+				}, ${color_val})`;
 			} else {
 				canvas_context.fillStyle = fill_style[arr[row][col]];
 			}
