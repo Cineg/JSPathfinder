@@ -124,64 +124,56 @@ function find_path(e) {
 
 	queue.push([0, 0, startpoint]);
 
-	while (queue.length > 0) {
-		const current_item = queue.shift();
-		const current_value = current_item[0];
-		const current_coordinates = current_item[2];
+	function processQueue() {
+		if (queue.length > 0) {
+			const current_item = queue.shift();
+			const current_value = current_item[0];
+			const current_coordinates = current_item[2];
 
-		for (let index = 0; index < coordinates.length; index++) {
-			const coordinate = coordinates[index];
-			const new_value = current_value + 1;
+			for (let index = 0; index < coordinates.length; index++) {
+				const coordinate = coordinates[index];
+				const new_value = current_value + 1;
 
-			const new_coordinate = [
-				coordinate[0] + current_coordinates[0],
-				coordinate[1] + current_coordinates[1],
-			];
-			if (
-				new_coordinate[0] == endpoint[0] &&
-				new_coordinate[1] == endpoint[1]
-			) {
-				return;
+				const new_coordinate = [
+					coordinate[0] + current_coordinates[0],
+					coordinate[1] + current_coordinates[1],
+				];
+
+				if (!out_of_bounds_check(new_coordinate)) {
+					continue;
+				}
+
+				if (
+					new_coordinate[0] == endpoint[0] &&
+					new_coordinate[1] == endpoint[1]
+				) {
+					return;
+				}
+
+				if (arr[new_coordinate[0]][new_coordinate[1]] != 0) {
+					continue;
+				}
+
+				if (
+					grid_values[new_coordinate[0]][new_coordinate[1]] <=
+						new_value &&
+					grid_values[new_coordinate[0]][new_coordinate[1]] != 0
+				) {
+					continue;
+				}
+
+				distance_left = get_distance(endpoint, new_coordinate);
+
+				queue.push([new_value, distance_left, new_coordinate]);
+				grid_values[new_coordinate[0]][new_coordinate[1]] = new_value;
 			}
 
-			if (new_coordinate[0] < 0 || new_coordinate[1] < 0) {
-				continue;
-			}
-			if (
-				new_coordinate[0] >= grid_values.length ||
-				new_coordinate[1] >= grid_values[0].length
-			) {
-				continue;
-			}
-
-			if (arr[new_coordinate[0]][new_coordinate[1]] != 0) {
-				continue;
-			}
-
-			if (
-				grid_values[new_coordinate[0]][new_coordinate[1]] <=
-					new_value &&
-				grid_values[new_coordinate[0]][new_coordinate[1]] != 0
-			) {
-				continue;
-			}
-
-			distance_left =
-				Math.pow(
-					Math.abs(parseInt([endpoint[0] - new_coordinate[0]])),
-					2
-				) +
-				Math.pow(
-					Math.abs(parseInt([endpoint[1] - new_coordinate[1]])),
-					2
-				);
-			queue.push([new_value, distance_left, new_coordinate]);
-			grid_values[new_coordinate[0]][new_coordinate[1]] = new_value;
-
-			setTimeout(redraw_path(grid_values), 500);
+			queue.sort((a, b) => a[1] - b[1]);
+			redraw_path(grid_values);
+			requestAnimationFrame(processQueue);
 		}
-		queue.sort((a, b) => a[1] - b[1]);
 	}
+	processQueue();
 }
 
 function redraw_path(path_grid) {
@@ -206,4 +198,28 @@ function redraw_path(path_grid) {
 			);
 		}
 	}
+}
+
+function get_distance(destination, current_position) {
+	return (
+		Math.pow(
+			Math.abs(parseInt([destination[0] - current_position[0]])),
+			2
+		) +
+		Math.pow(Math.abs(parseInt([destination[1] - current_position[1]])), 2)
+	);
+}
+
+function out_of_bounds_check(current_position) {
+	if (current_position[0] < 0 || current_position[1] < 0) {
+		return false;
+	}
+
+	if (
+		current_position[0] >= arr.length ||
+		current_position[1] >= arr[0].length
+	) {
+		return false;
+	}
+	return true;
 }
