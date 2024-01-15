@@ -13,6 +13,8 @@ let arr = create_grid(50, 50);
 const square_width = canvas.offsetWidth / arr.length;
 const square_height = canvas.offsetHeight / arr[0].length;
 
+let is_mouse_down = false;
+
 draw_canvas(arr);
 
 // events
@@ -40,6 +42,17 @@ pathfind_button.addEventListener("mousedown", function (e) {
 });
 
 canvas.addEventListener("mousedown", function (e) {
+	is_mouse_down = true;
+	update_grid_event(e);
+});
+
+canvas.addEventListener("mouseup", function (e) {
+	is_mouse_down = false;
+});
+
+canvas.addEventListener("mousemove", function (e) {
+	if (!is_mouse_down) return;
+
 	update_grid_event(e);
 });
 
